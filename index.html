@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - SchoolConnect</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="contenedor">
+        <div class="panel-izquierdo">
+            <div class="panel-header">Usuarios</div>
+            <ul id="lista-usuarios">
+
+            </ul>
+        </div>
+
+        <div class="panel-central">
+            <div class="top-bar">
+                <h1>SchoolConnect</h1>
+                <span id="current-user" class="user-greeting"></span>
+            </div>
+
+            <div id="area-mensajes">
+
+                <div class="empty-message-container">
+                    Selecciona "Redactar" para enviar un mensaje.
+                </div>
+            </div>
+
+            <div class="box-redactar hidden" id="seccion-redactar">
+                <input type="text" id="input-mensaje" class="input-mensaje" placeholder="Escribe un mensaje...">
+                <button id="btn-enviar" class="btn-enviar">Enviar</button>
+                <button id="btn-borrador" class="btn-enviar"
+                    style="background-color: #95a5a6; margin-left: 5px;">Borrador</button>
+            </div>
+        </div>
+
+
+        <div class="panel-derecho">
+            <button class="botones principal" id="btn-redactar">Redactar</button>
+            <button class="botones activo" id="filter-todos">Todos</button>
+            <button class="botones" id="filter-enviados">Enviados</button>
+            <button class="botones" id="filter-borradores">Borradores</button>
+            <button class="botones" id="filter-destacados">Destacar</button>
+            <button class="botones" id="filter-papelera">Papelera</button>
+            <button class="botones btn-logout-custom" id="btn-logout">Cerrar Sesión</button>
+        </div>
+
+
+        <div id="context-menu" class="hidden">
+            <div class="context-menu-item" id="ctx-destacar">Destacar</div>
+            <div class="context-menu-item delete" id="ctx-borrar-mi">Borrar para mí</div>
+            <div class="context-menu-item delete" id="ctx-borrar-todos">Borrar para todos</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
