@@ -356,6 +356,10 @@ body {
 }
 
 /* Responsive */
+.mobile-only {
+    display: none;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .mobile-only {
@@ -429,9 +433,6 @@ body {
    Helpers / Utility Classes
    ================== */
 /* Helpers / Utility Classes */
-.mobile-only {
-    display: none;
-}
 
 .form-column {
     width: 100%;
