@@ -172,6 +172,8 @@ body {
     flex-direction: column;
     background-color: #fdfdfd;
     position: relative;
+    overflow-x: hidden;
+    /* Prevent horizontal overflow */
 }
 
 .top-bar {
@@ -217,6 +219,8 @@ body {
     position: relative;
     line-height: 1.5;
     font-size: 14px;
+    word-break: break-word;
+    /* Prevent long words from overflowing */
 }
 
 .mensaje.propio {
@@ -300,6 +304,8 @@ body {
     display: flex;
     gap: 10px;
     align-items: center;
+    flex-wrap: wrap;
+    /* Allow wrapping on small screens */
 }
 
 .input-mensaje {
@@ -439,6 +445,18 @@ body {
     .contenedor-login {
         padding: 20px;
         width: 90%;
+    }
+
+    .box-redactar {
+        padding: 10px;
+        /* Reduce padding on mobile */
+    }
+
+    .btn-enviar {
+        flex: 1;
+        /* Make buttons grow to fill space */
+        text-align: center;
+        padding: 10px;
     }
 }
 

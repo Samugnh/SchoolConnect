@@ -286,11 +286,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     const rect = div.getBoundingClientRect();
                     contextMenu.style.top = `${rect.bottom + 5}px`;
 
+                    // Responsive positioning for context menu
+                    let menuLeft = rect.left;
                     if (div.classList.contains('propio')) {
-                        contextMenu.style.left = `${rect.right - 250}px`;
-                    } else {
-                        contextMenu.style.left = `${rect.left}px`;
+                        menuLeft = rect.right - 180; // Adjust for menu width
                     }
+
+                    // Prevent overflow on right edge
+                    if (menuLeft + 180 > window.innerWidth) {
+                        menuLeft = window.innerWidth - 190;
+                    }
+                    // Prevent overflow on left edge
+                    if (menuLeft < 10) {
+                        menuLeft = 10;
+                    }
+
+                    contextMenu.style.left = `${menuLeft}px`;
 
                     contextMenu.classList.remove('hidden');
                     document.getElementById('ctx-destacar').textContent = msg.starred ? '★ Quitar' : '★ Destacar';
