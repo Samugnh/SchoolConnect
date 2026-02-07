@@ -172,96 +172,99 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         // Función para guardar un mensaje (nuevo o borrador)
-        if (!text) return;
+        async function saveMessage(text, status) {
+            if (!text) return;
 
-        try {
-            const response = await fetch(`${API_URL}/messages`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    sender: currentUser.username,
-                    senderId: currentUser._id,
-                    text: text,
-                    status: status
-                })
-            });
+            try {
+                const response = await fetch(`${API_URL}/messages`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sender: currentUser.username,
+                        senderId: currentUser._id,
+                        text: text,
+                        status: status
+                    })
+                });
 
-            if (response.ok) {
-                inputMensaje.value = '';
-                loadMessages();
-            } else {
-                alert('Error al enviar mensaje');
+                if (response.ok) {
+                    inputMensaje.value = '';
+                    loadMessages();
+                } else {
+                    alert('Error al enviar mensaje');
+                }
+            } catch (error) {
+                console.error('Error al guardar mensaje:', error);
             }
-        } catch (error) {
-            console.error('Error al guardar mensaje:', error);
         }
-    }
 
-    btnEnviar.addEventListener('click', () => saveMessage(inputMensaje.value.trim(), 'sent'));
-    btnBorrador.addEventListener('click', () => saveMessage(inputMensaje.value.trim(), 'draft'));
+        btnEnviar.addEventListener('click', () => saveMessage(inputMensaje.value.trim(), 'sent'));
+        btnBorrador.addEventListener('click', () => saveMessage(inputMensaje.value.trim(), 'draft'));
 
 
-    // Función para cargar y mostrar los mensajes
-    try {
-        const response = await fetch(`${API_URL}/messages`);
-        if (!response.ok) return;
+        // Función para cargar y mostrar los mensajes
+        async function loadMessages() {
+            try {
+                const response = await fetch(`${API_URL}/messages`);
+                if (!response.ok) return;
 
-        const messages = await response.json();
-        allMessages = messages;
-        renderMessages(messages);
-    } catch (error) {
-        console.error('Error al cargar mensajes:', error);
-    }
-}
+                const messages = await response.json();
+                allMessages = messages;
+                renderMessages(messages);
+            } catch (error) {
+                console.error('Error al cargar mensajes:', error);
+            }
+        }
 
         // Renderizar (dibujar) los mensajes en pantalla aplicando filtros
+        function renderMessages(messages) {
             areaMensajes.innerHTML = '';
 
 
-let filteredMessages = messages.filter(msg => {
-    const isDeleted = msg.deletedFor && msg.deletedFor.includes(currentUser.username);
+            let filteredMessages = messages.filter(msg => {
+                const isDeleted = msg.deletedFor && msg.deletedFor.includes(currentUser.username);
 
-    if (currentFilter === 'papelera') {
-        return isDeleted;
-    }
+                if (currentFilter === 'papelera') {
+                    return isDeleted;
+                }
 
-    if (isDeleted) return false;
+                if (isDeleted) return false;
 
-    if (currentFilter === 'todos') {
-        return msg.status === 'sent';
-    }
-    if (currentFilter === 'enviados') {
-        return msg.sender === currentUser.username && msg.status === 'sent';
-    }
-    if (currentFilter === 'borradores') {
-        return msg.sender === currentUser.username && msg.status === 'draft';
-    }
-    if (currentFilter === 'destacados') {
-        return msg.starred === true && msg.status !== 'draft';
-    }
-    return false;
-});
+                if (currentFilter === 'todos') {
+                    return msg.status === 'sent';
+                }
+                if (currentFilter === 'enviados') {
+                    return msg.sender === currentUser.username && msg.status === 'sent';
+                }
+                if (currentFilter === 'borradores') {
+                    return msg.sender === currentUser.username && msg.status === 'draft';
+                }
+                if (currentFilter === 'destacados') {
+                    return msg.starred === true && msg.status !== 'draft';
+                }
+                return false;
+            });
 
-if (filteredMessages.length === 0) {
-    areaMensajes.innerHTML = '<div class="empty-message-container">No hay mensajes.</div>';
-    return;
-}
+            if (filteredMessages.length === 0) {
+                areaMensajes.innerHTML = '<div class="empty-message-container">No hay mensajes.</div>';
+                return;
+            }
 
-filteredMessages.forEach(msg => {
-    const div = document.createElement('div');
-    div.className = `mensaje ${msg.sender === currentUser.username ? 'propio' : 'recibido'}`;
-    if (msg.starred) div.classList.add('starred');
-    if (msg.status === 'deleted_everyone') div.classList.add('deleted');
+            filteredMessages.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = `mensaje ${msg.sender === currentUser.username ? 'propio' : 'recibido'}`;
+                if (msg.starred) div.classList.add('starred');
+                if (msg.status === 'deleted_everyone') div.classList.add('deleted');
 
-    let senderInfo = '';
-    if (msg.sender !== currentUser.username) {
-        senderInfo = `<div class="sender-info">${msg.sender}</div>`;
-    }
+                let senderInfo = '';
+                if (msg.sender !== currentUser.username) {
+                    senderInfo = `<div class="sender-info">${msg.sender}</div>`;
+                }
 
-    const displayText = msg.status === 'deleted_everyone' ? '🚫 <i>Mensaje eliminado</i>' : msg.text;
-    const time = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const displayText = msg.status === 'deleted_everyone' ? '🚫 <i>Mensaje eliminado</i>' : msg.text;
+                const time = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    div.innerHTML = `
+                div.innerHTML = `
                     ${senderInfo}
                     ${displayText}
                     <button class="message-options-btn">⋮</button>
@@ -269,122 +272,123 @@ filteredMessages.forEach(msg => {
                 `;
 
 
-    const btnOptions = div.querySelector('.message-options-btn');
-    btnOptions.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (msg.status === 'deleted_everyone') return;
+                const btnOptions = div.querySelector('.message-options-btn');
+                btnOptions.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (msg.status === 'deleted_everyone') return;
 
-        selectedMessageId = msg._id;
+                    selectedMessageId = msg._id;
 
-        const rect = div.getBoundingClientRect();
-        contextMenu.style.top = `${rect.bottom + 5}px`;
+                    const rect = div.getBoundingClientRect();
+                    contextMenu.style.top = `${rect.bottom + 5}px`;
 
-        if (div.classList.contains('propio')) {
-            contextMenu.style.left = `${rect.right - 250}px`;
-        } else {
-            contextMenu.style.left = `${rect.left}px`;
+                    if (div.classList.contains('propio')) {
+                        contextMenu.style.left = `${rect.right - 250}px`;
+                    } else {
+                        contextMenu.style.left = `${rect.left}px`;
+                    }
+
+                    contextMenu.classList.remove('hidden');
+                    document.getElementById('ctx-destacar').textContent = msg.starred ? '★ Quitar' : '★ Destacar';
+                });
+
+                areaMensajes.appendChild(div);
+            });
+            areaMensajes.scrollTop = areaMensajes.scrollHeight;
         }
 
-        contextMenu.classList.remove('hidden');
-        document.getElementById('ctx-destacar').textContent = msg.starred ? '★ Quitar' : '★ Destacar';
-    });
-
-    areaMensajes.appendChild(div);
-});
-areaMensajes.scrollTop = areaMensajes.scrollHeight;
-        }
-
-loadMessages();
-
-
-// Función para actualizar el estado de un mensaje (destacar, borrar)
-try {
-    await fetch(`${API_URL}/messages/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates)
-    });
-    loadMessages();
-} catch (error) {
-    console.error('Error al actualizar:', error);
-}
-        }
-
-
-document.getElementById('ctx-destacar').addEventListener('click', () => {
-    const msg = allMessages.find(m => m._id === selectedMessageId);
-    if (msg) updateMessage(selectedMessageId, { starred: !msg.starred });
-});
-
-document.getElementById('ctx-borrar-mi').addEventListener('click', () => {
-    updateMessage(selectedMessageId, { deletedForUser: currentUser.username });
-});
-
-document.getElementById('ctx-borrar-todos').addEventListener('click', () => {
-    updateMessage(selectedMessageId, { status: 'deleted_everyone' });
-});
-
-
-const filters = ['todos', 'enviados', 'borradores', 'destacados', 'papelera'];
-filters.forEach(filter => {
-    document.getElementById(`filter-${filter}`).addEventListener('click', (e) => {
-        currentFilter = filter;
-        document.querySelectorAll('.botones').forEach(b => b.classList.remove('activo'));
-        e.target.classList.add('activo');
-
-        renderMessages(allMessages);
-
-        // Close menu on mobile after selection
-        if (window.innerWidth <= 768) {
-            toggleRightPanel();
-        }
-    });
-});
-
-// --- RESPONSIVE / MÓVIL ---
-// Manejamos la apertura y cierre de paneles en pantallas pequeñas
-const btnToggleUsers = document.getElementById('btn-toggle-users');
-const btnToggleMenu = document.getElementById('btn-toggle-menu');
-const panelIzquierdo = document.querySelector('.panel-izquierdo');
-const panelDerecho = document.querySelector('.panel-derecho');
-
-// Create overlay
-const overlay = document.createElement('div');
-overlay.className = 'overlay';
-document.body.appendChild(overlay);
-
-function toggleLeftPanel() {
-    panelIzquierdo.classList.toggle('active');
-    overlay.classList.toggle('active');
-    if (panelDerecho.classList.contains('active')) {
-        panelDerecho.classList.remove('active');
-    }
-}
-
-function toggleRightPanel() {
-    panelDerecho.classList.toggle('active');
-    overlay.classList.toggle('active');
-    if (panelIzquierdo.classList.contains('active')) {
-        panelIzquierdo.classList.remove('active');
-    }
-}
-
-function closeAllPanels() {
-    panelIzquierdo.classList.remove('active');
-    panelDerecho.classList.remove('active');
-    overlay.classList.remove('active');
-}
-
-if (btnToggleUsers) btnToggleUsers.addEventListener('click', toggleLeftPanel);
-if (btnToggleMenu) btnToggleMenu.addEventListener('click', toggleRightPanel);
-overlay.addEventListener('click', closeAllPanels);
-
-
-setInterval(() => {
-    if (document.activeElement !== inputMensaje) {
         loadMessages();
-        loadUsers();
-    }
-}, 3000);
+
+
+        // Función para actualizar el estado de un mensaje (destacar, borrar)
+        async function updateMessage(id, updates) {
+            try {
+                await fetch(`${API_URL}/messages/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updates)
+                });
+                loadMessages();
+            } catch (error) {
+                console.error('Error al actualizar:', error);
+            }
+        }
+
+
+        document.getElementById('ctx-destacar').addEventListener('click', () => {
+            const msg = allMessages.find(m => m._id === selectedMessageId);
+            if (msg) updateMessage(selectedMessageId, { starred: !msg.starred });
+        });
+
+        document.getElementById('ctx-borrar-mi').addEventListener('click', () => {
+            updateMessage(selectedMessageId, { deletedForUser: currentUser.username });
+        });
+
+        document.getElementById('ctx-borrar-todos').addEventListener('click', () => {
+            updateMessage(selectedMessageId, { status: 'deleted_everyone' });
+        });
+
+
+        const filters = ['todos', 'enviados', 'borradores', 'destacados', 'papelera'];
+        filters.forEach(filter => {
+            document.getElementById(`filter-${filter}`).addEventListener('click', (e) => {
+                currentFilter = filter;
+                document.querySelectorAll('.botones').forEach(b => b.classList.remove('activo'));
+                e.target.classList.add('activo');
+
+                renderMessages(allMessages);
+
+                // Close menu on mobile after selection
+                if (window.innerWidth <= 768) {
+                    toggleRightPanel();
+                }
+            });
+        });
+
+        // --- RESPONSIVE / MÓVIL ---
+        // Manejamos la apertura y cierre de paneles en pantallas pequeñas
+        const btnToggleUsers = document.getElementById('btn-toggle-users');
+        const btnToggleMenu = document.getElementById('btn-toggle-menu');
+        const panelIzquierdo = document.querySelector('.panel-izquierdo');
+        const panelDerecho = document.querySelector('.panel-derecho');
+
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        document.body.appendChild(overlay);
+
+        function toggleLeftPanel() {
+            panelIzquierdo.classList.toggle('active');
+            overlay.classList.toggle('active');
+            if (panelDerecho.classList.contains('active')) {
+                panelDerecho.classList.remove('active');
+            }
+        }
+
+        function toggleRightPanel() {
+            panelDerecho.classList.toggle('active');
+            overlay.classList.toggle('active');
+            if (panelIzquierdo.classList.contains('active')) {
+                panelIzquierdo.classList.remove('active');
+            }
+        }
+
+        function closeAllPanels() {
+            panelIzquierdo.classList.remove('active');
+            panelDerecho.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        if (btnToggleUsers) btnToggleUsers.addEventListener('click', toggleLeftPanel);
+        if (btnToggleMenu) btnToggleMenu.addEventListener('click', toggleRightPanel);
+        overlay.addEventListener('click', closeAllPanels);
+
+
+        setInterval(() => {
+            if (document.activeElement !== inputMensaje) {
+                loadMessages();
+                loadUsers();
+            }
+        }, 3000);
     }
 });
