@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const path = window.location.pathname;
-    const isLogin = path.includes('login.html');
+    const isLogin = path.includes('index.html') || path === '/' || path.endsWith('/');
     const isRegister = path.includes('registro.html');
     const isIndex = path.includes('inicio.html');
 
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     alert('Usuario registrado exitosamente.');
-                    window.location.href = 'login.html';
+                    window.location.href = 'index.html';
                 } else {
                     alert(data.message || 'Error al registrar usuario');
                 }
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         if (!currentUser) {
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
             return;
         }
 
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('btn-logout').addEventListener('click', () => {
             clearSession();
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         });
 
         let currentFilter = 'todos';
