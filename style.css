@@ -181,11 +181,24 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
+    /* Ensure separation on small screens */
 }
 
 .top-bar h1 {
     font-size: 20px;
     font-weight: 600;
+}
+
+.clickable-title {
+    cursor: pointer;
+    user-select: none;
+    /* Prevent text selection when clicking */
+    transition: opacity 0.2s;
+}
+
+.clickable-title:active {
+    opacity: 0.7;
 }
 
 #area-mensajes {

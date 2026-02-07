@@ -158,6 +158,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         btnRedactar.addEventListener('click', () => {
             seccionRedactar.classList.toggle('hidden');
+            // Close menu on mobile to show the compose box
+            if (window.innerWidth <= 768) {
+                toggleRightPanel();
+            }
         });
 
 
@@ -379,7 +383,9 @@ document.addEventListener('DOMContentLoaded', () => {
             overlay.classList.remove('active');
         }
 
-        if (btnToggleUsers) btnToggleUsers.addEventListener('click', toggleLeftPanel);
+        if (btnToggleUsers) btnToggleUsers.addEventListener('click', toggleLeftPanel); // Keep for safety if cached html
+        const appTitle = document.getElementById('app-title');
+        if (appTitle) appTitle.addEventListener('click', toggleLeftPanel);
         if (btnToggleMenu) btnToggleMenu.addEventListener('click', toggleRightPanel);
         overlay.addEventListener('click', closeAllPanels);
 
