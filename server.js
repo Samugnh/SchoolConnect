@@ -1,3 +1,4 @@
+// Cargamos las variables de entorno para proteger datos sensibles como credenciales
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -12,6 +13,8 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 
+// Configuración de la base de datos (MongoDB)
+// Usamos la variable de entorno o una local por defecto
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
@@ -24,6 +27,8 @@ mongoose.connect(MONGODB_URI || 'mongodb://localhost:27017/schoolconnect')
     .catch(err => console.error('❌ Error de conexión a MongoDB:', err));
 
 
+// --- DEFINICIÓN DE MODELOS ---
+// Aquí definimos la estructura de los datos para Usuarios y Mensajes
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -45,6 +50,9 @@ const User = mongoose.model('User', userSchema);
 const Message = mongoose.model('Message', messageSchema);
 
 
+// --- RUTAS DE LA API ---
+
+// 1. Registro de usuarios
 app.post('/api/register', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -69,6 +77,7 @@ app.post('/api/register', async (req, res) => {
 });
 
 
+// 2. Inicio de sesión (Login)
 app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -87,6 +96,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 
+// 3. Obtener lista de usuarios (para mostrar en el panel izquierdo)
 app.get('/api/users', async (req, res) => {
     try {
         const users = await User.find({}, 'username email');
@@ -97,6 +107,7 @@ app.get('/api/users', async (req, res) => {
 });
 
 
+// 4. Gestión de Mensajes (Obtener todos)
 app.get('/api/messages', async (req, res) => {
     try {
         const messages = await Message.find().sort({ timestamp: 1 });
@@ -124,6 +135,8 @@ app.post('/api/messages', async (req, res) => {
 });
 
 
+// 5. Actualizar mensajes (Borrar, Destacar, etc.)
+// Usamos PATCH porque solo modificamos una parte del mensaje (su estado)
 app.patch('/api/messages/:id', async (req, res) => {
     try {
         const { id } = req.params;

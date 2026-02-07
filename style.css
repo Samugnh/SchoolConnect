@@ -356,24 +356,71 @@ body {
 }
 
 /* Responsive */
+/* Responsive */
 @media (max-width: 768px) {
+    .mobile-only {
+        display: block;
+    }
+
     .contenedor {
-        flex-direction: column;
+        position: relative;
     }
 
     .panel-izquierdo,
     .panel-derecho {
-        width: 100%;
-        height: auto;
-        flex: none;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        z-index: 100;
+        width: 80%;
+        max-width: 300px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease;
+        background-color: var(--panel-color);
     }
 
+    /* Left Panel (Users) - Slide from left */
     .panel-izquierdo {
-        height: 150px;
+        left: 0;
+        transform: translateX(-100%);
     }
 
+    .panel-izquierdo.active {
+        transform: translateX(0);
+    }
+
+    /* Right Panel (Actions) - Slide from right */
     .panel-derecho {
+        right: 0;
+        transform: translateX(100%);
+        display: flex; /* Override previous display:none if it existed */
+    }
+
+    .panel-derecho.active {
+        transform: translateX(0);
+    }
+
+    /* Overlay backing when panels are open */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 90;
         display: none;
+    }
+
+    .overlay.active {
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    .contenedor-login {
+        padding: 20px;
+        width: 90%;
     }
 }
 
@@ -401,6 +448,26 @@ body {
 .btn-logout-custom {
     margin-top: auto;
     color: #e74c3c;
+}
+
+/* Mobile Toggle Buttons */
+.mobile-only {
+    display: none;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--primary-color);
+    padding: 5px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 /* JS Injected Elements */
