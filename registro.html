@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 
+<!--
+    Página de Registro
+    Permite a nuevos usuarios crear una cuenta en el sistema.
+-->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,16 +16,22 @@
 <body class="body-login">
     <div class="contenedor-login">
         <h1>Registrarse</h1>
+
+        <!-- Formulario de registro -->
         <form id="registro-form" class="form-column">
             <input type="text" id="reg-usuario" placeholder="Nombre de Usuario" class="input-login" required>
             <input type="password" id="reg-password" placeholder="Contraseña" class="input-login" required>
+            <!-- Pedimos confirmación para evitar errores de dedo -->
             <input type="password" id="reg-confirm-password" placeholder="Confirmar Contraseña" class="input-login"
                 required>
             <button type="submit" class="boton-login">Crear Cuenta</button>
         </form>
+
+        <!-- Botón para volver atrás si ya tiene cuenta -->
         <a href="index.html" class="boton-login secundario">Volver al Login</a>
     </div>
 
+    <!-- Reutilizamos el mismo script que maneja toda la lógica -->
     <script src="script.js"></script>
 </body>
 

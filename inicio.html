@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 
+<!--
+    Página Principal (Dashboard)
+    Aquí sucede toda la magia: ver usuarios, chatear y gestionar mensajes.
+-->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,30 +14,39 @@
 </head>
 
 <body>
+    <!-- Contenedor principal que organiza los tres paneles de la aplicación -->
     <div class="contenedor">
+
+        <!-- PANEL IZQUIERDO: LISTA DE USUARIOS -->
         <div class="panel-izquierdo">
             <div class="panel-header">Usuarios</div>
+            <!-- Aquí se insertará la lista de usuarios mediante JS -->
             <ul id="lista-usuarios">
-
+                <!-- Los usuarios se cargan dinámicamente -->
             </ul>
         </div>
 
+
+        <!-- PANEL CENTRAL: CHAT Y MENSAJES -->
         <div class="panel-central">
+            <!-- Barra superior con el título y el saludo al usuario -->
             <div class="top-bar">
                 <h1 id="app-title" class="clickable-title">SchoolConnect</h1>
                 <div class="header-right">
                     <span id="current-user" class="user-greeting"></span>
+                    <!-- Botón hamburguesa solo visible en móviles -->
                     <button id="btn-toggle-menu" class="btn-icon mobile-only">☰</button>
                 </div>
             </div>
 
+            <!-- Área donde aparecen los mensajes -->
             <div id="area-mensajes">
-
                 <div class="empty-message-container">
                     Selecciona "Redactar" para enviar un mensaje.
                 </div>
             </div>
 
+            <!-- Área de redacción (oculta por defecto hasta pulsar Redactar) -->
             <div class="box-redactar hidden" id="seccion-redactar">
                 <input type="text" id="input-mensaje" class="input-mensaje" placeholder="Escribe un mensaje...">
                 <button id="btn-enviar" class="btn-enviar">Enviar</button>
@@ -42,17 +56,23 @@
         </div>
 
 
+        <!-- PANEL DERECHO: FILTROS Y ACCIONES -->
         <div class="panel-derecho">
             <button class="botones principal" id="btn-redactar">Redactar</button>
+
+            <!-- Botones de filtro para ver distintos tipos de mensajes -->
             <button class="botones activo" id="filter-todos">Todos</button>
             <button class="botones" id="filter-enviados">Enviados</button>
             <button class="botones" id="filter-borradores">Borradores</button>
             <button class="botones" id="filter-destacados">Destacar</button>
             <button class="botones" id="filter-papelera">Papelera</button>
+
             <button class="botones btn-logout-custom" id="btn-logout">Cerrar Sesión</button>
         </div>
 
 
+        <!-- MENÚ CONTEXTUAL (FLOTANTE) -->
+        <!-- Aparece al hacer clic en los tres puntos de un mensaje -->
         <div id="context-menu" class="hidden">
             <div class="context-menu-item" id="ctx-destacar">Destacar</div>
             <div class="context-menu-item delete" id="ctx-borrar-mi">Borrar para mí</div>
@@ -60,6 +80,7 @@
         </div>
     </div>
 
+    <!-- Script principal -->
     <script src="script.js"></script>
 </body>
 
