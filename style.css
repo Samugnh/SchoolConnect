@@ -374,7 +374,7 @@ body {
         z-index: 100;
         width: 80%;
         max-width: 300px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         transition: transform 0.3s ease;
         background-color: var(--panel-color);
     }
@@ -393,7 +393,8 @@ body {
     .panel-derecho {
         right: 0;
         transform: translateX(100%);
-        display: flex; /* Override previous display:none if it existed */
+        display: flex;
+        /* Override previous display:none if it existed */
     }
 
     .panel-derecho.active {
@@ -407,7 +408,7 @@ body {
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0,0,0,0.5);
+        background: rgba(0, 0, 0, 0.5);
         z-index: 90;
         display: none;
     }
@@ -427,6 +428,11 @@ body {
 /* ==================
    Helpers / Utility Classes
    ================== */
+/* Helpers / Utility Classes */
+.mobile-only {
+    display: none;
+}
+
 .form-column {
     width: 100%;
     display: flex;
@@ -451,9 +457,7 @@ body {
 }
 
 /* Mobile Toggle Buttons */
-.mobile-only {
-    display: none;
-}
+/* Mobile Toggle Buttons (Moved to top/default section) */
 
 .btn-icon {
     background: none;
