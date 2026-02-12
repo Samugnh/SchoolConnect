@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
 
     // URL base de nuestra API. 
     // Funciona tanto en local como en producción (Render) gracias a la ruta relativa.
@@ -27,6 +27,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function clearSession() {
         localStorage.removeItem(SESSION_KEY);
+    }
+
+
+    // --- FUNCIÓN DE NOTIFICACIONES ---
+    // Muestra notificaciones del navegador solo si la ventana está en segundo plano
+    function showNotification(title, body, icon = '📬') {
+        // Solo mostramos notificaciones si:
+        // 1. El usuario dio permiso
+        // 2. La pestaña está oculta/minimizada (no queremos molestar si ya está viendo)
+        if (Notification.permission === "granted" && document.hidden) {
+            new Notification(title, {
+                body: body,
+                icon: icon,
+                badge: icon
+            });
+        }
     }
 
 
@@ -150,6 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // { type: 'group', id: 'groupId', name: 'GroupName' } -> Grupo
 
         let allMessages = [];
+        let lastMessageCount = 0; // Para detectar nuevos mensajes
+        let lastGroupCount = 0;   // Para detectar nuevos grupos
         const userList = document.getElementById('lista-usuarios');
         const groupList = document.getElementById('lista-grupos'); // Nuevo
         const areaMensajes = document.getElementById('area-mensajes');
@@ -248,6 +266,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) return;
 
                 const groups = await response.json();
+
+                // --- DETECCIÓN DE NUEVOS GRUPOS PARA NOTIFICACIONES ---
+                if (groups.length > lastGroupCount && lastGroupCount > 0) {
+                    const newGroups = groups.slice(lastGroupCount);
+                    newGroups.forEach(group => {
+                        showNotification(
+                            '👥 Nuevo Grupo Creado',
+                            `Has sido añadido al grupo "${group.name}"`
+                        );
+                    });
+                }
+                lastGroupCount = groups.length;
+
                 groupList.innerHTML = '';
 
                 groups.forEach(group => {
@@ -436,6 +467,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) return;
 
                 const messages = await response.json();
+
+                // --- DETECCIÓN DE NUEVOS MENSAJES PARA NOTIFICACIONES ---
+                if (messages.length > lastMessageCount && lastMessageCount > 0) {
+                    const newMessages = messages.slice(lastMessageCount);
+
+                    newMessages.forEach(msg => {
+                        // No notificamos si el mensaje es del usuario actual
+                        if (msg.sender !== currentUser.username && msg.status === 'sent') {
+                            let notifTitle = '';
+                            let notifBody = '';
+
+                            if (!activeChat) {
+                                // Mensaje en chat general
+                                notifTitle = '📢 Nuevo mensaje en General';
+                                notifBody = `${msg.sender}: ${msg.text.substring(0, 50)}${msg.text.length > 50 ? '...' : ''}`;
+                            } else if (activeChat.type === 'private') {
+                                // Solo notificamos si el mensaje es para nosotros en el chat activo
+                                if (msg.recipient === currentUser.username || msg.sender === activeChat.user) {
+                                    notifTitle = `💬 Mensaje de ${msg.sender}`;
+                                    notifBody = msg.text.substring(0, 50) + (msg.text.length > 50 ? '...' : '');
+                                }
+                            } else if (activeChat.type === 'group' && msg.groupId === activeChat.id) {
+                                // Mensaje en grupo activo
+                                notifTitle = `👥 ${activeChat.name}`;
+                                notifBody = `${msg.sender}: ${msg.text.substring(0, 50)}${msg.text.length > 50 ? '...' : ''}`;
+                            }
+
+                            if (notifTitle) {
+                                showNotification(notifTitle, notifBody);
+                            }
+                        }
+                    });
+                }
+                lastMessageCount = messages.length;
+
                 allMessages = messages; // Guardamos todos los mensajes en memoria
                 renderMessages(messages); // Y luego los pintamos en pantalla
             } catch (error) {
