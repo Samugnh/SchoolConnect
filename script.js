@@ -30,18 +30,37 @@
     }
 
 
-    // --- FUNCIÓN DE NOTIFICACIONES ---
-    // Muestra notificaciones del navegador solo si la ventana está en segundo plano
-    function showNotification(title, body, icon = '📬') {
-        // Mostramos notificaciones si el usuario dio permiso.
-        // Ya no verificamos document.hidden para que lleguen con la pestaña activa.
-        if (Notification.permission === "granted") {
-            new Notification(title, {
-                body: body,
-                icon: icon,
-                badge: icon
-            });
-        }
+    // --- SISTEMA DE NOTIFICACIONES INTERNAS (TOASTS) ---
+    function showInAppNotification(title, body, type = 'general') {
+        const container = document.getElementById('notification-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+
+        toast.innerHTML = `
+            <div class="toast-header">
+                <span>${title}</span>
+                <span style="font-size: 10px; opacity: 0.5;">ahora</span>
+            </div>
+            <div class="toast-body">${body}</div>
+        `;
+
+        // Efecto al hacer click: cerrar la notificación
+        toast.addEventListener('click', () => {
+            toast.classList.add('removing');
+            setTimeout(() => toast.remove(), 300);
+        });
+
+        container.appendChild(toast);
+
+        // Auto-eliminar después de 5 segundos
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.classList.add('removing');
+                setTimeout(() => toast.remove(), 300);
+            }
+        }, 5000);
     }
 
 
@@ -466,23 +485,26 @@
                         if (msg.sender !== currentUser.username && msg.status === 'sent') {
                             let notifTitle = '';
                             let notifBody = '';
-
+                            let type = 'general';
                             if (!msg.recipient && !msg.groupId) {
                                 // Chat General
                                 notifTitle = '📢 Nuevo en General';
                                 notifBody = `${msg.sender}: ${msg.text.substring(0, 50)}${msg.text.length > 50 ? '...' : ''}`;
+                                type = 'general';
                             } else if (msg.recipient === currentUser.username) {
                                 // Mensaje Privado para mí
                                 notifTitle = `💬 Privado de ${msg.sender}`;
                                 notifBody = msg.text.substring(0, 50) + (msg.text.length > 50 ? '...' : '');
+                                type = 'private';
                             } else if (msg.groupId) {
-                                // Mensaje en un grupo (lo detectamos si no es privado ni global)
+                                // Mensaje en un grupo
                                 notifTitle = `👥 Grupo: ${msg.sender}`;
                                 notifBody = `${msg.text.substring(0, 50)}${msg.text.length > 50 ? '...' : ''}`;
+                                type = 'group';
                             }
 
                             if (notifTitle) {
-                                showNotification(notifTitle, notifBody);
+                                showInAppNotification(notifTitle, notifBody, type);
                             }
                         }
                     });
@@ -720,10 +742,7 @@
         overlay.addEventListener('click', closeAllPanels); // Clic fuera cierra todo
 
 
-        // SOLICITUD DE NOTIFICACIONES
-        if (Notification.permission !== "granted") {
-            Notification.requestPermission();
-        }
+
 
 
         // Polling: Actualizamos mensajes y usuarios automáticamente cada 3 segundos
