@@ -771,6 +771,7 @@ body {
 
 /* ==================
    SISTEMA DE NOTIFICACIONES INTERNAS (TOASTS)
+   Aquí es donde le damos estilo a las tarjetitas que salen arriba.
    ================== */
 .notification-container {
     position: fixed;
@@ -781,6 +782,7 @@ body {
     flex-direction: column;
     gap: 15px;
     pointer-events: none;
+    /* Esto es para que no bloquee los clics si no hay nada */
 }
 
 .toast {
@@ -789,6 +791,7 @@ body {
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     border-left: 6px solid var(--primary-color);
+    /* El borde de color le da el toque */
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -802,13 +805,19 @@ body {
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
+/* Pequeño efecto al pasar el mouse para que se sienta pro */
 .toast:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
 }
 
-.toast.private { border-left-color: var(--secondary-color); }
-.toast.group { border-left-color: #e67e22; }
+.toast.private {
+    border-left-color: var(--secondary-color);
+}
+
+.toast.group {
+    border-left-color: #e67e22;
+}
 
 .toast-header {
     font-size: 13px;
@@ -819,8 +828,13 @@ body {
     align-items: center;
 }
 
-.toast.private .toast-header { color: var(--secondary-color); }
-.toast.group .toast-header { color: #e67e22; }
+.toast.private .toast-header {
+    color: var(--secondary-color);
+}
+
+.toast.group .toast-header {
+    color: #e67e22;
+}
 
 .toast-body {
     font-size: 14px;
@@ -840,6 +854,7 @@ body {
         opacity: 0;
         transform: translateX(100%) scale(0.9);
     }
+
     to {
         opacity: 1;
         transform: translateX(0) scale(1);

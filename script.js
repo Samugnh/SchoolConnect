@@ -31,13 +31,17 @@
 
 
     // --- SISTEMA DE NOTIFICACIONES INTERNAS (TOASTS) ---
+    // Esta función crea esas tarjetitas que salen arriba a la derecha.
+    // Es mejor que las del navegador porque no piden permiso y siempre se ven.
     function showInAppNotification(title, body, type = 'general') {
         const container = document.getElementById('notification-container');
         if (!container) return;
 
+        // Creamos el div de la notificación
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
 
+        // El contenido HTML con el título y el cuerpo
         toast.innerHTML = `
             <div class="toast-header">
                 <span>${title}</span>
@@ -46,7 +50,7 @@
             <div class="toast-body">${body}</div>
         `;
 
-        // Efecto al hacer click: cerrar la notificación
+        // Si el usuario hace clic, la cerramos de una vez
         toast.addEventListener('click', () => {
             toast.classList.add('removing');
             setTimeout(() => toast.remove(), 300);
@@ -54,7 +58,7 @@
 
         container.appendChild(toast);
 
-        // Auto-eliminar después de 5 segundos
+        // Para no llenar la pantalla, se quita sola después de 5 segundos
         setTimeout(() => {
             if (toast.parentElement) {
                 toast.classList.add('removing');
@@ -468,20 +472,22 @@
 
 
         // --- VIGILANCIA GLOBAL DE NOTIFICACIONES ---
+        // Este es el "ojo que todo lo ve". Revisa todos los canales en segundo plano
+        // para avisarnos si llega algo nuevo fuera del chat actual.
         async function checkGlobalNotifications() {
             try {
-                // Pedimos todos los mensajes relevantes para el usuario
+                // Pedimos todos los mensajes relevantes para el usuario actual
                 const response = await fetch(`${API_URL}/messages/all?username=${currentUser.username}`);
                 if (!response.ok) return;
 
                 const messages = await response.json();
 
-                // Detectamos nuevos mensajes comparando con el conteo anterior
+                // Si hay más mensajes que la última vez, ¡hay chisme nuevo!
                 if (messages.length > lastMessageCount && lastMessageCount > 0) {
                     const newMessages = messages.slice(lastMessageCount);
 
                     newMessages.forEach(msg => {
-                        // Solo notificamos si el mensaje NO es nuestro y es un mensaje enviado ('sent')
+                        // Solo notificamos si el mensaje NO es nuestro y ya se envió
                         if (msg.sender !== currentUser.username && msg.status === 'sent') {
                             let notifTitle = '';
                             let notifBody = '';

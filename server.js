@@ -244,15 +244,14 @@ app.post('/api/messages', async (req, res) => {
     try {
         const { sender, senderId, text, status, recipient, groupId } = req.body;
 
-        // VÁLIDACIÓN DE PERMISOS
-        // Si es mensaje GLOBAL (sin destinatario ni grupo), verificamos si es admin
+        // OJO: En un sistema real esto se haría mirando un campo "role" en la base de datos,
+        // pero seguimos la instrucción literal del usuario (usar .admin en el nombre).
         if (!recipient && !groupId) {
-            // Verificamos si el usuario tiene ".admin" en su nombre
-            // OJO: En un sistema real esto se haría mirando un campo "role" en la base de datos,
-            // pero seguimos la instrucción literal del usuario.
+            // Un chequeo rápido: si no va para nadie ni para un grupo, es global.
+            // Solo dejamos que posteen los que tengan el sufijo mágico .admin
             if (!sender.includes('.admin')) {
                 return res.status(403).json({
-                    message: 'Solo los administradores (usuarios con .admin) pueden enviar mensajes al canal público.'
+                    message: 'Lo siento, solo los administradores pueden hablar aquí.'
                 });
             }
         }
@@ -261,15 +260,18 @@ app.post('/api/messages', async (req, res) => {
             sender,
             senderId,
             text,
-            status: status || 'sent', // Si no se especifica, se asume que es "enviado"
-            recipient, // Opcional
-            groupId // Opcional
+            status: status || 'sent',
+            recipient,
+            groupId,
+            timestamp: new Date()
         });
 
+        // Guardamos y mandamos la respuesta. ¡Listo!
         await newMessage.save();
         res.status(201).json(newMessage);
     } catch (error) {
-        res.status(500).json({ message: 'Hubo un problema al enviar el mensaje.' });
+        console.error("Vaya, algo falló al enviar el mensaje:", error);
+        res.status(500).json({ message: 'Error interno del servidor' });
     }
 });
 
