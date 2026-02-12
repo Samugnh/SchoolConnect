@@ -137,7 +137,7 @@ app.get('/api/groups', async (req, res) => {
     try {
         const username = req.query.username;
         if (!username) return res.status(400).json({ message: 'Falta el username' });
-        
+
         const groups = await Group.find({ members: username });
         res.json(groups);
     } catch (error) {
@@ -149,10 +149,10 @@ app.get('/api/groups', async (req, res) => {
 app.post('/api/groups', async (req, res) => {
     try {
         const { name, creator, members } = req.body;
-        
+
         // Aseguramos que el creador esté en los miembros y sea admin
         const initialMembers = [...new Set([...members, creator])];
-        
+
         const newGroup = new Group({
             name,
             members: initialMembers,
@@ -160,7 +160,7 @@ app.post('/api/groups', async (req, res) => {
         });
 
         await newGroup.save();
-        
+
         // Actualizamos a los usuarios para que sepan que están en este grupo (opcional redundancia, pero útil)
         await User.updateMany(
             { username: { $in: initialMembers } },
@@ -212,6 +212,33 @@ app.get('/api/messages', async (req, res) => {
 });
 
 
+// 4.5 Obtener TODOS los mensajes relevantes para un usuario (Notificaciones Globales)
+app.get('/api/messages/all', async (req, res) => {
+    try {
+        const { username } = req.query;
+        if (!username) return res.status(400).json({ message: 'Se requiere el nombre de usuario.' });
+
+        const user = await User.findOne({ username });
+        if (!user) return res.status(404).json({ message: 'Usuario no encontrado.' });
+
+        // Buscamos: Públicos, Privados donde participa el usuario, o Mensajes de sus grupos
+        const messages = await Message.find({
+            $or: [
+                { recipient: { $exists: false }, groupId: { $exists: false } }, // Global
+                { sender: username }, // Enviados por mí
+                { recipient: username }, // Recibidos por mí
+                { groupId: { $in: user.groups } } // Mensajes en mis grupos
+            ]
+        }).sort({ timestamp: 1 });
+
+        res.json(messages);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al recuperar notificaciones globales.' });
+    }
+});
+
+
 // 5. Enviar un nuevo mensaje (MODIFICADO)
 app.post('/api/messages', async (req, res) => {
     try {
@@ -220,14 +247,14 @@ app.post('/api/messages', async (req, res) => {
         // VÁLIDACIÓN DE PERMISOS
         // Si es mensaje GLOBAL (sin destinatario ni grupo), verificamos si es admin
         if (!recipient && !groupId) {
-             // Verificamos si el usuario tiene ".admin" en su nombre
-             // OJO: En un sistema real esto se haría mirando un campo "role" en la base de datos,
-             // pero seguimos la instrucción literal del usuario.
-             if (!sender.includes('.admin')) {
-                 return res.status(403).json({ 
-                     message: 'Solo los administradores (usuarios con .admin) pueden enviar mensajes al canal público.' 
-                 });
-             }
+            // Verificamos si el usuario tiene ".admin" en su nombre
+            // OJO: En un sistema real esto se haría mirando un campo "role" en la base de datos,
+            // pero seguimos la instrucción literal del usuario.
+            if (!sender.includes('.admin')) {
+                return res.status(403).json({
+                    message: 'Solo los administradores (usuarios con .admin) pueden enviar mensajes al canal público.'
+                });
+            }
         }
 
         const newMessage = new Message({

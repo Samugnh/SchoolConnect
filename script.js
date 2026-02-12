@@ -33,10 +33,9 @@
     // --- FUNCIÓN DE NOTIFICACIONES ---
     // Muestra notificaciones del navegador solo si la ventana está en segundo plano
     function showNotification(title, body, icon = '📬') {
-        // Solo mostramos notificaciones si:
-        // 1. El usuario dio permiso
-        // 2. La pestaña está oculta/minimizada (no queremos molestar si ya está viendo)
-        if (Notification.permission === "granted" && document.hidden) {
+        // Mostramos notificaciones si el usuario dio permiso.
+        // Ya no verificamos document.hidden para que lleguen con la pestaña activa.
+        if (Notification.permission === "granted") {
             new Notification(title, {
                 body: body,
                 icon: icon,
@@ -449,6 +448,51 @@
         btnBorrador.addEventListener('click', () => saveMessage(inputMensaje.value.trim(), 'draft'));
 
 
+        // --- VIGILANCIA GLOBAL DE NOTIFICACIONES ---
+        async function checkGlobalNotifications() {
+            try {
+                // Pedimos todos los mensajes relevantes para el usuario
+                const response = await fetch(`${API_URL}/messages/all?username=${currentUser.username}`);
+                if (!response.ok) return;
+
+                const messages = await response.json();
+
+                // Detectamos nuevos mensajes comparando con el conteo anterior
+                if (messages.length > lastMessageCount && lastMessageCount > 0) {
+                    const newMessages = messages.slice(lastMessageCount);
+
+                    newMessages.forEach(msg => {
+                        // Solo notificamos si el mensaje NO es nuestro y es un mensaje enviado ('sent')
+                        if (msg.sender !== currentUser.username && msg.status === 'sent') {
+                            let notifTitle = '';
+                            let notifBody = '';
+
+                            if (!msg.recipient && !msg.groupId) {
+                                // Chat General
+                                notifTitle = '📢 Nuevo en General';
+                                notifBody = `${msg.sender}: ${msg.text.substring(0, 50)}${msg.text.length > 50 ? '...' : ''}`;
+                            } else if (msg.recipient === currentUser.username) {
+                                // Mensaje Privado para mí
+                                notifTitle = `💬 Privado de ${msg.sender}`;
+                                notifBody = msg.text.substring(0, 50) + (msg.text.length > 50 ? '...' : '');
+                            } else if (msg.groupId) {
+                                // Mensaje en un grupo (lo detectamos si no es privado ni global)
+                                notifTitle = `👥 Grupo: ${msg.sender}`;
+                                notifBody = `${msg.text.substring(0, 50)}${msg.text.length > 50 ? '...' : ''}`;
+                            }
+
+                            if (notifTitle) {
+                                showNotification(notifTitle, notifBody);
+                            }
+                        }
+                    });
+                }
+                lastMessageCount = messages.length;
+            } catch (error) {
+                console.error('Error en polling global:', error);
+            }
+        }
+
         // Función para cargar los mensajes desde el servidor
         async function loadMessages() {
             try {
@@ -467,40 +511,6 @@
                 if (!response.ok) return;
 
                 const messages = await response.json();
-
-                // --- DETECCIÓN DE NUEVOS MENSAJES PARA NOTIFICACIONES ---
-                if (messages.length > lastMessageCount && lastMessageCount > 0) {
-                    const newMessages = messages.slice(lastMessageCount);
-
-                    newMessages.forEach(msg => {
-                        // No notificamos si el mensaje es del usuario actual
-                        if (msg.sender !== currentUser.username && msg.status === 'sent') {
-                            let notifTitle = '';
-                            let notifBody = '';
-
-                            if (!activeChat) {
-                                // Mensaje en chat general
-                                notifTitle = '📢 Nuevo mensaje en General';
-                                notifBody = `${msg.sender}: ${msg.text.substring(0, 50)}${msg.text.length > 50 ? '...' : ''}`;
-                            } else if (activeChat.type === 'private') {
-                                // Solo notificamos si el mensaje es para nosotros en el chat activo
-                                if (msg.recipient === currentUser.username || msg.sender === activeChat.user) {
-                                    notifTitle = `💬 Mensaje de ${msg.sender}`;
-                                    notifBody = msg.text.substring(0, 50) + (msg.text.length > 50 ? '...' : '');
-                                }
-                            } else if (activeChat.type === 'group' && msg.groupId === activeChat.id) {
-                                // Mensaje en grupo activo
-                                notifTitle = `👥 ${activeChat.name}`;
-                                notifBody = `${msg.sender}: ${msg.text.substring(0, 50)}${msg.text.length > 50 ? '...' : ''}`;
-                            }
-
-                            if (notifTitle) {
-                                showNotification(notifTitle, notifBody);
-                            }
-                        }
-                    });
-                }
-                lastMessageCount = messages.length;
 
                 allMessages = messages; // Guardamos todos los mensajes en memoria
                 renderMessages(messages); // Y luego los pintamos en pantalla
@@ -723,6 +733,7 @@
                 loadMessages();
                 loadUsers();
                 loadGroups();
+                checkGlobalNotifications(); // Vigilancia global de mensajes
             }
         }, 3000);
     }
