@@ -4,15 +4,24 @@
    Aquí definimos la paleta de colores para usarla en todo el sitio fácilmente.
 */
 :root {
-    --primary-color: #4a90e2;       /* Azul principal */
-    --secondary-color: #50e3c2;     /* Verde agua secundario */
-    --background-color: #f4f6f9;    /* Fondo gris muy claro */
-    --panel-color: #ffffff;         /* Blanco puro para paneles */
-    --text-color: #333333;          /* Texto casi negro para lectura */
-    --text-light: #7f8c8d;          /* Texto gris para detalles */
-    --border-color: #e0e0e0;        /* Bordes sutiles */
-    --hover-color: #f0f2f5;         /* Color al pasar el mouse por encima de elementos */
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Sombra suave */
+    --primary-color: #4a90e2;
+    /* Azul principal */
+    --secondary-color: #50e3c2;
+    /* Verde agua secundario */
+    --background-color: #f4f6f9;
+    /* Fondo gris muy claro */
+    --panel-color: #ffffff;
+    /* Blanco puro para paneles */
+    --text-color: #333333;
+    /* Texto casi negro para lectura */
+    --text-light: #7f8c8d;
+    /* Texto gris para detalles */
+    --border-color: #e0e0e0;
+    /* Bordes sutiles */
+    --hover-color: #f0f2f5;
+    /* Color al pasar el mouse por encima de elementos */
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    /* Sombra suave */
 }
 
 /* Reseteo básico para que se vea igual en todos los navegadores */
@@ -36,8 +45,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Ocupa toda la altura de la pantalla */
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Fondo degradado elegante */
+    min-height: 100vh;
+    /* Ocupa toda la altura de la pantalla */
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    /* Fondo degradado elegante */
 }
 
 .contenedor-login {
@@ -49,7 +60,8 @@ body {
     padding: 40px;
     border-radius: 16px;
     background-color: var(--panel-color);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Efecto de elevación */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    /* Efecto de elevación */
     width: 100%;
     max-width: 400px;
 }
@@ -73,7 +85,8 @@ body {
 }
 
 .input-login:focus {
-    border-color: var(--primary-color); /* Se ilumina al escribir */
+    border-color: var(--primary-color);
+    /* Se ilumina al escribir */
 }
 
 
@@ -96,7 +109,8 @@ body {
 }
 
 .boton-login:hover {
-    background-color: #357abd; /* Se oscurece un poco al pasar el mouse */
+    background-color: #357abd;
+    /* Se oscurece un poco al pasar el mouse */
 }
 
 /* Botón secundario (bordeado, sin fondo) */
@@ -120,7 +134,8 @@ body {
     display: flex;
     height: 100vh;
     width: 100vw;
-    overflow: hidden; /* Evitamos scroll en la página completa, solo en los paneles */
+    overflow: hidden;
+    /* Evitamos scroll en la página completa, solo en los paneles */
 }
 
 
@@ -131,7 +146,8 @@ body {
     border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    flex-shrink: 0; /* No se encoge */
+    flex-shrink: 0;
+    /* No se encoge */
 }
 
 .panel-header {
@@ -144,9 +160,11 @@ body {
 
 #lista-usuarios {
     flex: 1;
-    overflow-y: auto; /* Scroll si hay muchos usuarios */
+    overflow-y: auto;
+    /* Scroll si hay muchos usuarios */
     padding: 10px;
-    list-style: none; /* Quitamos los puntos de la lista */
+    list-style: none;
+    /* Quitamos los puntos de la lista */
 }
 
 .usuario-item {
@@ -167,7 +185,8 @@ body {
 .avatar {
     width: 32px;
     height: 32px;
-    border-radius: 50%; /* Círculo perfecto */
+    border-radius: 50%;
+    /* Círculo perfecto */
     background-color: var(--secondary-color);
     display: flex;
     justify-content: center;
@@ -180,7 +199,8 @@ body {
 
 /* --- PANEL CENTRAL: ÁREA DE MENSAJES --- */
 .panel-central {
-    flex: 1; /* Ocupa todo el espacio restante */
+    flex: 1;
+    /* Ocupa todo el espacio restante */
     display: flex;
     flex-direction: column;
     background-color: #fdfdfd;
@@ -208,6 +228,7 @@ body {
     user-select: none;
     transition: opacity 0.2s;
 }
+
 .clickable-title:active {
     opacity: 0.7;
 }
@@ -215,7 +236,8 @@ body {
 #area-mensajes {
     flex: 1;
     padding: 20px;
-    overflow-y: auto; /* Scroll vertical para los mensajes */
+    overflow-y: auto;
+    /* Scroll vertical para los mensajes */
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -224,13 +246,15 @@ body {
 
 /* Estilos de las burbujas de mensaje */
 .mensaje {
-    max-width: 70%; /* No ocupan todo el ancho para que parezca chat */
+    max-width: 70%;
+    /* No ocupan todo el ancho para que parezca chat */
     padding: 12px 30px 12px 18px;
     border-radius: 12px;
     position: relative;
     line-height: 1.5;
     font-size: 14px;
-    word-break: break-word; /* Rompe palabras muy largas para que no se salgan */
+    word-break: break-word;
+    /* Rompe palabras muy largas para que no se salgan */
 }
 
 /* Mensajes enviados por mí (Color Azul, a la derecha) */
@@ -238,7 +262,8 @@ body {
     align-self: flex-end;
     background-color: var(--primary-color);
     color: white;
-    border-bottom-right-radius: 2px; /* Pequeña esquina recta */
+    border-bottom-right-radius: 2px;
+    /* Pequeña esquina recta */
 }
 
 /* Mensajes recibidos (Blancos, a la izquierda) */
@@ -259,13 +284,15 @@ body {
     cursor: pointer;
     font-size: 16px;
     color: rgba(255, 255, 255, 0.7);
-    opacity: 0; /* Invisible por defecto */
+    opacity: 0;
+    /* Invisible por defecto */
     transition: opacity 0.2s;
     padding: 0 5px;
 }
 
 .mensaje.recibido .message-options-btn {
-    color: var(--text-light); /* Color oscuro para mensajes recibidos */
+    color: var(--text-light);
+    /* Color oscuro para mensajes recibidos */
 }
 
 /* Solo mostramos el botón de opciones al pasar el mouse por encima */
@@ -307,7 +334,8 @@ body {
 
 .context-menu-item.delete:hover {
     background-color: #ffebee;
-    color: #e74c3c; /* Rojo para borrar */
+    color: #e74c3c;
+    /* Rojo para borrar */
 }
 
 
@@ -319,7 +347,8 @@ body {
     display: flex;
     gap: 10px;
     align-items: center;
-    flex-wrap: wrap; /* Permitir que baje si no cabe en móviles */
+    flex-wrap: wrap;
+    /* Permitir que baje si no cabe en móviles */
 }
 
 .input-mensaje {
@@ -412,7 +441,8 @@ body {
 }
 
 .btn-logout-custom {
-    margin-top: auto; /* Empuja el botón al fondo */
+    margin-top: auto;
+    /* Empuja el botón al fondo */
     color: #e74c3c;
 }
 
@@ -422,7 +452,8 @@ body {
 
 /* Iconos y estados de mensaje */
 .mensaje.starred::after {
-    content: '★'; /* Estrella Unicode */
+    content: '★';
+    /* Estrella Unicode */
     position: absolute;
     top: -5px;
     right: -5px;
@@ -444,12 +475,14 @@ body {
    ================== */
 
 .mobile-only {
-    display: none; /* Oculto en escritorio */
+    display: none;
+    /* Oculto en escritorio */
 }
 
 @media (max-width: 768px) {
     .mobile-only {
-        display: block; /* Visible en móvil */
+        display: block;
+        /* Visible en móvil */
     }
 
     .btn-icon {
@@ -488,22 +521,27 @@ body {
     /* Panel Izquierdo: Entra desde la izquierda */
     .panel-izquierdo {
         left: 0;
-        transform: translateX(-100%); /* Oculto a la izquierda */
+        transform: translateX(-100%);
+        /* Oculto a la izquierda */
     }
 
     .panel-izquierdo.active {
-        transform: translateX(0); /* Visible */
+        transform: translateX(0);
+        /* Visible */
     }
 
     /* Panel Derecho: Entra desde la derecha */
     .panel-derecho {
         right: 0;
-        transform: translateX(100%); /* Oculto a la derecha */
-        display: flex; /* Override previous display:none if it existed */
+        transform: translateX(100%);
+        /* Oculto a la derecha */
+        display: flex;
+        /* Override previous display:none if it existed */
     }
 
     .panel-derecho.active {
-        transform: translateX(0); /* Visible */
+        transform: translateX(0);
+        /* Visible */
     }
 
     /* Capa oscura de fondo cuando se abre un menú */
@@ -535,8 +573,198 @@ body {
     }
 
     .btn-enviar {
-        flex: 1; /* Los botones crecen para ser fáciles de tocar */
+        flex: 1;
+        /* Los botones crecen para ser fáciles de tocar */
         text-align: center;
         padding: 10px;
     }
+}
+
+
+/* ==================
+   NUEVOS ESTILOS PARA GRUPOS Y MENSAJES PRIVADOS
+   ================== */
+
+/* Chat Info en top bar */
+.chat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.chat-context {
+    font-size: 12px;
+    color: var(--text-light);
+    font-weight: 400;
+}
+
+/* Lista scrolleable para usuarios y grupos */
+.lista-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    list-style: none;
+}
+
+.usuario-item.selected,
+.grupo-item.selected {
+    background-color: #e3f2fd;
+    border-left: 3px solid var(--primary-color);
+}
+
+/* Botón pequeño para crear grupo */
+.btn-small {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-small:hover {
+    background-color: #357abd;
+    transform: scale(1.1);
+}
+
+.btn-small:active {
+    transform: scale(0.95);
+}
+
+.panel-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Estilos del modal para crear grupo */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+    font-size: 22px;
+    color: var(--text-color);
+}
+
+.input-modal {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-modal:focus {
+    border-color: var(--primary-color);
+}
+
+.lista-seleccion {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #fafafa;
+}
+
+.lista-seleccion label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.lista-seleccion input[type="checkbox"] {
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-cancelar,
+.btn-confirmar {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-cancelar {
+    background-color: #e0e0e0;
+    color: var(--text-color);
+}
+
+.btn-cancelar:hover {
+    background-color: #d0d0d0;
+}
+
+.btn-confirmar {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-confirmar:hover {
+    background-color: #357abd;
+}
+
+/* Mensaje info para administradores */
+.sender-info {
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    opacity: 0.8;
+}
+
+.message-timestamp {
+    font-size: 10px;
+    opacity: 0.6;
+    margin-top: 4px;
 }

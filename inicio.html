@@ -17,12 +17,22 @@
     <!-- Contenedor principal que organiza los tres paneles de la aplicación -->
     <div class="contenedor">
 
-        <!-- PANEL IZQUIERDO: LISTA DE USUARIOS -->
+        <!-- PANEL IZQUIERDO: LISTA DE USUARIOS Y GRUPOS -->
         <div class="panel-izquierdo">
-            <div class="panel-header">Usuarios</div>
-            <!-- Aquí se insertará la lista de usuarios mediante JS -->
-            <ul id="lista-usuarios">
+            <div class="panel-header">
+                <h3>Usuarios</h3>
+            </div>
+            <ul id="lista-usuarios" class="lista-scroll">
                 <!-- Los usuarios se cargan dinámicamente -->
+            </ul>
+
+            <div class="panel-header"
+                style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3>Grupos</h3>
+                <button id="btn-crear-grupo" class="btn-small" title="Crear grupo">+</button>
+            </div>
+            <ul id="lista-grupos" class="lista-scroll">
+                <!-- Los grupos se cargan dinámicamente -->
             </ul>
         </div>
 
@@ -31,7 +41,10 @@
         <div class="panel-central">
             <!-- Barra superior con el título y el saludo al usuario -->
             <div class="top-bar">
-                <h1 id="app-title" class="clickable-title">SchoolConnect</h1>
+                <div class="chat-info">
+                    <h1 id="app-title" class="clickable-title">SchoolConnect</h1>
+                    <span id="chat-subtitulo" class="chat-context">Canal General</span>
+                </div>
                 <div class="header-right">
                     <span id="current-user" class="user-greeting"></span>
                     <!-- Botón hamburguesa solo visible en móviles -->
@@ -77,6 +90,23 @@
             <div class="context-menu-item" id="ctx-destacar">Destacar</div>
             <div class="context-menu-item delete" id="ctx-borrar-mi">Borrar para mí</div>
             <div class="context-menu-item delete" id="ctx-borrar-todos">Borrar para todos</div>
+        </div>
+
+        <!-- MODAL CREAR GRUPO -->
+        <div id="modal-grupo" class="modal hidden">
+            <div class="modal-content">
+                <h2>Crear Nuevo Grupo</h2>
+                <input type="text" id="input-nombre-grupo" placeholder="Nombre del grupo (ej. Trabajo Final)"
+                    class="input-modal">
+                <p>Selecciona miembros:</p>
+                <div id="lista-seleccion-usuarios" class="lista-seleccion">
+                    <!-- Checkboxes de usuarios generados con JS -->
+                </div>
+                <div class="modal-actions">
+                    <button id="btn-cancelar-grupo" class="btn-cancelar">Cancelar</button>
+                    <button id="btn-confirmar-grupo" class="btn-confirmar">Crear Grupo</button>
+                </div>
+            </div>
         </div>
     </div>
 

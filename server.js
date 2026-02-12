@@ -40,7 +40,15 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true }, // El nombre de usuario no se puede repetir
     password: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    createdAt: { type: Date, default: Date.now } // Se guarda la fecha de creación automáticamente
+    createdAt: { type: Date, default: Date.now },
+    groups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Group' }] // Grupos a los que pertenece
+});
+
+const groupSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    members: [{ type: String }], // Array de usernames
+    admins: [{ type: String }], // Array de usernames que son admins del grupo
+    createdAt: { type: Date, default: Date.now }
 });
 
 const messageSchema = new mongoose.Schema({
@@ -50,11 +58,15 @@ const messageSchema = new mongoose.Schema({
     status: { type: String, enum: ['sent', 'draft', 'deleted_everyone'], default: 'sent' }, // Estado del mensaje
     starred: { type: Boolean, default: false }, // ¿Es favorito?
     deletedFor: [{ type: String }], // Lista de usuarios que han "borrado" este mensaje de su vista
-    timestamp: { type: Date, default: Date.now }
+    timestamp: { type: Date, default: Date.now },
+    // Nuevos campos para mensajería avanzada
+    recipient: { type: String }, // Si es privado, aquí va el username del destino
+    groupId: { type: mongoose.Schema.Types.ObjectId, ref: 'Group' } // Si es de grupo, aquí va el ID
 });
 
 // Creamos los modelos a partir de los esquemas
 const User = mongoose.model('User', userSchema);
+const Group = mongoose.model('Group', groupSchema);
 const Message = mongoose.model('Message', messageSchema);
 
 
@@ -120,30 +132,111 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
+// 3.5 Obtener grupos del usuario (NUEVO)
+app.get('/api/groups', async (req, res) => {
+    try {
+        const username = req.query.username;
+        if (!username) return res.status(400).json({ message: 'Falta el username' });
+        
+        const groups = await Group.find({ members: username });
+        res.json(groups);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al recuperar grupos.' });
+    }
+});
 
-// 4. Obtener todos los mensajes
-// Se usa para cargar el chat al inicio
+// 3.6 Crear un grupo (NUEVO)
+app.post('/api/groups', async (req, res) => {
+    try {
+        const { name, creator, members } = req.body;
+        
+        // Aseguramos que el creador esté en los miembros y sea admin
+        const initialMembers = [...new Set([...members, creator])];
+        
+        const newGroup = new Group({
+            name,
+            members: initialMembers,
+            admins: [creator]
+        });
+
+        await newGroup.save();
+        
+        // Actualizamos a los usuarios para que sepan que están en este grupo (opcional redundancia, pero útil)
+        await User.updateMany(
+            { username: { $in: initialMembers } },
+            { $push: { groups: newGroup._id } }
+        );
+
+        res.status(201).json(newGroup);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al crear el grupo' });
+    }
+});
+
+
+// 4. Obtener mensajes (MODIFICADO)
+// Se usa para cargar el chat al inicio, ahora con soporte para privados y grupos
 app.get('/api/messages', async (req, res) => {
     try {
+        const { username, recipient, groupId } = req.query;
+
+        let query = {};
+
+        if (groupId) {
+            // Mensajes de un grupo específico
+            query = { groupId: groupId };
+        } else if (username && recipient) {
+            // Mensajes privados entre dos usuarios
+            query = {
+                $or: [
+                    { sender: username, recipient: recipient },
+                    { sender: recipient, recipient: username }
+                ]
+            };
+        } else {
+            // Mensajes globales (Públicos)
+            // Son aquellos que NO tienen recipient NI groupId
+            query = {
+                recipient: { $exists: false },
+                groupId: { $exists: false }
+            };
+        }
+
         // Los ordenamos por fecha para que salgan en orden cronológico
-        const messages = await Message.find().sort({ timestamp: 1 });
+        const messages = await Message.find(query).sort({ timestamp: 1 });
         res.json(messages);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Error al recuperar los mensajes.' });
     }
 });
 
 
-// 5. Enviar un nuevo mensaje
+// 5. Enviar un nuevo mensaje (MODIFICADO)
 app.post('/api/messages', async (req, res) => {
     try {
-        const { sender, senderId, text, status } = req.body;
+        const { sender, senderId, text, status, recipient, groupId } = req.body;
+
+        // VÁLIDACIÓN DE PERMISOS
+        // Si es mensaje GLOBAL (sin destinatario ni grupo), verificamos si es admin
+        if (!recipient && !groupId) {
+             // Verificamos si el usuario tiene ".admin" en su nombre
+             // OJO: En un sistema real esto se haría mirando un campo "role" en la base de datos,
+             // pero seguimos la instrucción literal del usuario.
+             if (!sender.includes('.admin')) {
+                 return res.status(403).json({ 
+                     message: 'Solo los administradores (usuarios con .admin) pueden enviar mensajes al canal público.' 
+                 });
+             }
+        }
 
         const newMessage = new Message({
             sender,
             senderId,
             text,
-            status: status || 'sent' // Si no se especifica, se asume que es "enviado"
+            status: status || 'sent', // Si no se especifica, se asume que es "enviado"
+            recipient, // Opcional
+            groupId // Opcional
         });
 
         await newMessage.save();
